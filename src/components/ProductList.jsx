@@ -1,17 +1,44 @@
 import React from 'react'
 import { dataproducts } from '../products';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export const ProductList = ({
+
     allProducts,
 	setAllProducts,
 	countProducts,
 	setCountProducts,
 	total,
     setTotal
+    
 }) => { 
 
-   
+    const BASE_URL = "./products.json";
+    const [isLoading,       setLoading ]       = useState(true);
+    const [totalProyectos,    SetTotal ]       = useState(0);
+    const [productsdata,   setProducts ]       = useState([]);
+    const [creditParams, setCreditParams] = useState(dataproducts)
+    const [title, setTitle] = useState('NewTitle');
+
+
+    useEffect(() => {
+        setLoading(true);
+        const fetchProjects = async () => {
+          try {
+            await fetch(`${BASE_URL}`)
+                .then((res) => res.json())
+                .then((data) => {
+                setProducts(data.products);
+                SetTotal(data.products.length);
+                setLoading(false);
+              });
+          } catch (err) {
+            console.error(err);
+          }
+        };
+        fetchProjects();
+      }, []);
+
 	const onAddProduct = product => {
        
 		if (allProducts.find(item => item.id === product.id)) {
@@ -20,6 +47,7 @@ export const ProductList = ({
 					? { ...item, quantity: item.quantity + 1 }
 					: item
             );
+
 			setTotal(total + product.price * product.quantity);
 			setCountProducts(countProducts + product.quantity);
 			return setAllProducts([...products]);
@@ -30,23 +58,46 @@ export const ProductList = ({
             setAllProducts([...allProducts, product]);
     };
     
-    const handleNameChange = event =>  {
-          setVal(event.target.value)
-      };
+
+
+         // Edit Products
+    const onChangeProductsTitle = (editProduct, index, event) => 
+       {
+            setCreditParams(PreCreditParams => PreCreditParams.map(
+                (item, itemIndex) => 
+                itemIndex === index 
+                ? { ...item,  nameProduct: event.target.value }
+                : item
+            ));
+       }
+
+                // Edit Preci
+    const onChangeProductsPreci = (editPreci, index, event) => 
+    {
+         setCreditParams(PreciCreditParams => PreciCreditParams.map(
+             (item, itemIndex) => 
+             itemIndex === index 
+             ? { ...item,  price: event.target.value }
+             : item
+         ));
+    }
 
     return (
         <div>
-           <div className='container-items border mt-2'>
-           <div className="w-full grid-cols-2 gap-2  md:gap-2 mt-2 grid md:grid-cols-4 lg:grid-cols-4 
+            
+           <div   className='container-items border mt-2'>
+           <small className=""> Cantidad de Productos [ · { totalProyectos } · ] </small>
+           <div   className="w-full grid-cols-2 gap-2  md:gap-2 mt-2 grid md:grid-cols-4 lg:grid-cols-4 
                 lg:gap-0 md:my-2  xs:px-1">
-			{dataproducts.map(product => (
-              
+			    {creditParams.map((product, index) => (
+
                     <div className='p-2 w-full  hover:ring-2 
                     hover:rounded-2xl 
                     hover:cursor-pointer' key={product.id}>
                     <div className="overflow-x-hidden rounded-2xl relative">
                     <figure className='h-40 rounded-2xl w-full object-cover'>
-						<img src={product.img} className='h-40 rounded-2xl w-full object-cover' alt={product.nameProduct} />
+                        <img src={product.img} className='h-40 rounded-2xl w-full object-cover' 
+                             alt={product.nameProduct} />
 					</figure>
                         <p className="absolute right-2 top-2 bg-white rounded-full p-2 cursor-pointer group">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 group-hover:opacity-70" fill="none" viewBox="0 0 24 24" stroke="gray" >
@@ -61,11 +112,20 @@ export const ProductList = ({
                             <input
                                 type="text"
                                 value={product.nameProduct}
-                                onChange={handleNameChange}
+                                min="1"
+                                onChange={(e) => onChangeProductsTitle(product.nameProduct, index, e)}
                                 className="w-[70%]"
                             />  
                             </p>
-                        <p className="text-md text-gray-800 ">${product.price}</p>
+                            <p className="text-lg font-semibold text-gray-900 mb-0">
+                            $<input
+                                type="number"
+                                value={`${product.price}`}
+                                min="1"
+                                onChange={(e) => onChangeProductsPreci(product.price, index, e)}
+                                className="w-[70%]"
+                            />  
+                            </p>
                     </div>
                     <button onClick={() => onAddProduct(product)} className="w-full md:w-[60%]">
                         <div className="flex flex-col-reverse mb-1 mr-4 group cursor-pointer">
