@@ -1,18 +1,33 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { Header } from './components/Header';
+import { ProductList } from './components/ProductList';
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-
+	const [allProducts, setAllProducts] = useState([]);
+	const [total, setTotal] = useState(0);
+  const [countProducts, setCountProducts] = useState(0);
+  
   return (
-    <div className="App">
-      <div>
-      <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
-    </div>
-    </div>
+   <>
+    <Header
+    allProducts={allProducts}
+    setAllProducts={setAllProducts}
+    total={total}
+    setTotal={setTotal}
+    countProducts={countProducts}
+    setCountProducts={setCountProducts}
+    />
+     <ProductList
+     allProducts={allProducts}
+     setAllProducts={setAllProducts}
+     total={total}
+     setTotal={setTotal}
+     countProducts={countProducts}
+     setCountProducts={setCountProducts}
+     />
+   </>
   )
 }
 
